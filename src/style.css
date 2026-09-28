@@ -1,0 +1,533 @@
+:root {
+  color: #f3e6c4;
+  background: #07060c;
+  font-family: "Cormorant Garamond", Palatino, "Palatino Linotype", Georgia, serif;
+  font-size: 18px;
+  line-height: 1.35;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(1200px 700px at 50% 18%, rgba(48, 24, 36, 0.45), transparent 60%),
+    #07060c;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  appearance: none;
+  border: 1px solid rgba(138, 100, 50, 0.85);
+  background: rgba(12, 8, 10, 0.55);
+  color: #f3e6c4;
+  padding: 7px 10px;
+  font-family: Cinzel, Palatino, "Palatino Linotype", serif;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+button.active,
+button[aria-pressed='true'] {
+  border-color: #e4c56a;
+  color: #fff6df;
+  background: rgba(212, 175, 90, 0.16);
+}
+
+button:hover {
+  border-color: #e4c56a;
+}
+
+button:focus-visible,
+input:focus-visible,
+summary:focus-visible {
+  outline: 2px solid #e4c56a;
+  outline-offset: 2px;
+}
+
+::selection {
+  background: rgba(212, 175, 90, 0.35);
+  color: #fff8ea;
+}
+
+#cosmos {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: crosshair;
+}
+
+.mast {
+  position: fixed;
+  top: 28px;
+  left: 32px;
+  z-index: 2;
+  pointer-events: none;
+  max-width: min(640px, calc(100vw - 460px));
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.75);
+}
+
+.eyebrow,
+.tagline,
+.card-kicker,
+.tags,
+.roman,
+.sources,
+.keys,
+.attr,
+.status,
+.muted {
+  font-family: Cinzel, Palatino, "Palatino Linotype", serif;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  font-size: 11px;
+  color: #e4c56a;
+}
+
+.mast h1 {
+  margin: 0;
+  font-family: Cinzel, Palatino, "Palatino Linotype", serif;
+  font-weight: 500;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 0.95;
+  color: #f6ecd4;
+}
+
+.tagline {
+  margin: 12px 0 0;
+  font-family: "Cormorant Garamond", Palatino, serif;
+  font-style: italic;
+  font-size: 1.25rem;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: #e7d7b4;
+}
+
+.card {
+  position: fixed;
+  top: 92px;
+  right: 28px;
+  z-index: 3;
+  width: min(400px, calc(100vw - 36px));
+  opacity: 0;
+  transform: translateY(18px);
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(36, 24, 20, 0.9), rgba(12, 9, 12, 0.92));
+  border: 1px solid rgba(212, 175, 90, 0.45);
+  box-shadow:
+    inset 0 0 0 1px rgba(243, 230, 196, 0.08),
+    0 24px 60px rgba(0, 0, 0, 0.45);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+.card.live {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.card.arrive .card-body {
+  animation: rise 0.6s ease;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.speak-bar {
+  height: 2px;
+  background: rgba(228, 197, 106, 0.15);
+}
+
+.speak-bar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #6b1d32, #e4c56a);
+}
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px 0;
+}
+
+.card-kicker {
+  margin: 0 0 4px;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #d4af5a;
+}
+
+.card h2 {
+  margin: 0;
+  font-family: Cinzel, Palatino, "Palatino Linotype", serif;
+  font-size: 1.35rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+}
+
+.card-body {
+  max-height: min(46vh, 440px);
+  overflow: auto;
+  padding: 10px 16px 16px;
+  overscroll-behavior: contain;
+}
+
+.wiki-shot {
+  margin: 2px 0 12px;
+  cursor: zoom-in;
+}
+
+.wiki-shot img {
+  display: block;
+  width: 100%;
+  height: 132px;
+  object-fit: cover;
+  object-position: center 18%;
+  border: 1px solid rgba(212, 175, 90, 0.45);
+}
+
+.wiki-shot figcaption {
+  margin-top: 4px;
+  color: #cbb892;
+  font-family: Cinzel, Palatino, serif;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.wiki-more {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 12px;
+}
+
+.wiki-more .wiki-shot {
+  margin: 0;
+}
+
+.wiki-more .wiki-shot img {
+  width: 72px;
+  height: 72px;
+  object-position: center;
+}
+
+.wiki-zoom {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  background: rgba(6, 4, 8, 0.88);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease;
+}
+
+.wiki-zoom.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.wiki-zoom img {
+  width: 100vw;
+  height: 100vh;
+  object-fit: contain;
+  transform: scale(0.94);
+  transition: transform 0.22s ease;
+}
+
+.wiki-zoom.open img {
+  transform: scale(1);
+}
+
+.tags,
+.roman,
+.sources,
+.muted {
+  margin: 0 0 8px;
+  color: #cbb892;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.roman {
+  text-transform: none;
+  letter-spacing: 0.04em;
+  font-family: "Cormorant Garamond", Palatino, serif;
+  font-style: italic;
+  font-size: 1.05rem;
+}
+
+.narration {
+  margin: 0 0 12px;
+  font-size: 1.22rem;
+  line-height: 1.4;
+  color: #f4ead8;
+}
+
+.sources {
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-family: "Cormorant Garamond", Palatino, serif;
+  font-size: 1rem;
+}
+
+.card a {
+  color: #e4c56a;
+  font-family: Cinzel, Palatino, serif;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.rail {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 12px;
+  z-index: 4;
+  padding: 10px 14px 8px;
+  background: rgba(8, 6, 10, 0.78);
+  border: 1px solid rgba(212, 175, 90, 0.32);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+}
+
+.meander {
+  height: 8px;
+  margin: -10px -14px 8px;
+  opacity: 0.75;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='8' viewBox='0 0 44 8'%3E%3Cpath d='M0 7V1h8v6h4V1h8v6h4V1h8v6h4V1h8' fill='none' stroke='%23d4af5a' stroke-width='1'/%3E%3C/svg%3E")
+    repeat-x center;
+}
+
+.transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  justify-content: space-between;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.clock {
+  margin: 0;
+  min-width: 0;
+  max-width: min(46vw, 520px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: Cinzel, Palatino, serif;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+}
+
+.era-ticks {
+  position: relative;
+  height: 16px;
+  margin-top: 6px;
+}
+
+.era-ticks span {
+  position: absolute;
+  top: 0;
+  font-family: Cinzel, Palatino, serif;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #b9a27a;
+  white-space: nowrap;
+  transform: translateX(0);
+}
+
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 22px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+  height: 2px;
+  background: linear-gradient(90deg, #3a2a4a, #6b1d32 28%, #d4af5a 62%, #1d4e6f);
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: #f3e6c4;
+  border: 1px solid #8a6432;
+}
+
+input[type='range']::-moz-range-track {
+  height: 2px;
+  background: linear-gradient(90deg, #3a2a4a, #6b1d32 28%, #d4af5a 62%, #1d4e6f);
+}
+
+input[type='range']::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #f3e6c4;
+  border: 1px solid #8a6432;
+}
+
+.status,
+.keys,
+.attr {
+  margin: 4px 0 0;
+  color: #b7a892;
+  font-family: "Cormorant Garamond", Palatino, serif;
+  font-size: 0.95rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.keys,
+.attr {
+  font-size: 0.86rem;
+}
+
+.filters {
+  margin-top: 6px;
+}
+
+.filters summary {
+  cursor: pointer;
+  font-family: Cinzel, Palatino, serif;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #e4c56a;
+}
+
+.filters-body {
+  max-height: 26vh;
+  overflow: auto;
+  padding-top: 8px;
+}
+
+@media (max-width: 800px) {
+  .mast {
+    top: 12px;
+    left: 12px;
+    max-width: calc(100vw - 24px);
+  }
+
+  .mast h1 {
+    font-size: 1.45rem;
+    letter-spacing: 0.08em;
+  }
+
+  .tagline {
+    margin-top: 4px;
+    font-size: 1rem;
+  }
+
+  .card {
+    top: auto;
+    right: 10px;
+    left: 10px;
+    bottom: 198px;
+    width: auto;
+    max-height: 28vh;
+  }
+
+  .card-body {
+    max-height: 16vh;
+  }
+
+  .wiki-shot img {
+    height: 72px;
+  }
+
+  .wiki-more .wiki-shot img {
+    width: 56px;
+    height: 56px;
+  }
+
+  .rail {
+    left: 8px;
+    right: 8px;
+    bottom: 6px;
+    padding: 8px 10px 6px;
+  }
+
+  .keys {
+    display: none;
+  }
+
+  button {
+    padding: 6px 7px;
+  }
+
+  .era-ticks {
+    display: none;
+  }
+
+  .clock {
+    max-width: 100%;
+    flex: 1 1 100%;
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .card.arrive .card-body,
+  .wiki-zoom,
+  .wiki-zoom img {
+    animation: none;
+    transition: none;
+  }
+}
