@@ -54,6 +54,28 @@ describe('Playback', () => {
     expect(next).toBe('b')
   })
 
+  it('holds the current episode while an image is under the pointer', () => {
+    const playback = new Playback()
+    playback.setEvents([episode('a', 1), episode('b', 2)], 60_000)
+    playback.tick(40, () => {})
+    playback.setInspecting(true)
+    const remain = playback.focusRemain
+    let next: string | null = null
+    playback.tick(1_000, (event) => {
+      next = event.id
+    })
+    expect(next).toBeNull()
+    expect(playback.focused?.id).toBe('a')
+    expect(playback.focusRemain).toBe(remain)
+    playback.setInspecting(false)
+    playback.focusRemain = 0
+    playback.tick(40, () => {})
+    playback.tick(40, (event) => {
+      next = event.id
+    })
+    expect(next).toBe('b')
+  })
+
   it('stops at the end of the chronicle', () => {
     const playback = new Playback()
     playback.setEvents([episode('a', 1), episode('b', 2)], 1_000)

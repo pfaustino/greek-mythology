@@ -13,6 +13,7 @@ export type HudHandlers = {
   onEra: (era: Era | 'all') => void
   onTag: (tag: Tag | 'all') => void
   onNarration: (enabled: boolean) => void
+  onInspect: (active: boolean) => void
 }
 
 export class Hud {
@@ -34,6 +35,7 @@ export class Hud {
   private bodyHidden = false
   private imageToken = 0
   private pinnedZoom = false
+  private readonly onInspect: (active: boolean) => void
 
   constructor(cardRoot: HTMLElement, railRoot: HTMLElement, handlers: HudHandlers) {
     const eraButtons = ERAS.map((era) => `<button type="button" data-era="${era}">${eraLabel(era)}</button>`).join('')
@@ -116,9 +118,19 @@ export class Hud {
     this.zoomEl = zoom
     this.zoomImg = zoomImg
     this.zoomCaption = zoomCaption
-    this.cardBody.addEventListener('pointerover', (event) => this.onThumbOver(event))
-    this.cardBody.addEventListener('pointerout', (event) => this.onThumbOut(event))
-    this.cardBody.addEventListener('click', (event) => this.onMoreClick(event))
+    this.onInspect = handlers.onInspect
+    this.cardBody.addEventListener('pointerover', (event) => {
+      this.onThumbOver(event)
+      this.onImageInspect(event, true)
+    })
+    this.cardBody.addEventListener('pointerout', (event) => {
+      this.onThumbOut(event)
+      this.onImageInspect(event, false)
+    })
+    this.cardBody.addEventListener('click', (event) => {
+      this.onMoreClick(event)
+      this.onImageInspect(event, true)
+    })
     window.addEventListener('click', (event) => this.onOutsideZoomClick(event), true)
 
     const cardToggle = cardRoot.querySelector('#card-toggle') as HTMLButtonElement
@@ -242,6 +254,7 @@ export class Hud {
   }
 
   showEvent(event: MythEvent): void {
+    this.onInspect(false)
     this.cardTitle.textContent = event.title
     const kicker = this.cardEl.querySelector('#card-kicker')
     if (kicker) kicker.textContent = `${eraLabel(event.era)} · ${realmLabel(event.realm)}`
@@ -280,14 +293,14 @@ export class Hud {
     }
     const spokenY =
       el.getBoundingClientRect().top - this.cardBody.getBoundingClientRect().top + this.cardBody.scrollTop + el.offsetHeight * t
-    const padding = 28
-    const top = this.cardBody.scrollTop
-    const bottom = top + this.cardBody.clientHeight
-    if (spokenY > bottom - padding) this.cardBody.scrollTop = spokenY - this.cardBody.clientHeight + padding
-    else if (spokenY < top + padding) this.cardBody.scrollTop = Math.max(0, spokenY - padding)
+    // Park the spoken line in the upper third so the card starts moving before that line reaches the bottom.
+    const lead = Math.max(72, this.cardBody.clientHeight * 0.34)
+    const nextTop = Math.max(0, spokenY - lead)
+    if (nextTop > this.cardBody.scrollTop) this.cardBody.scrollTop = nextTop
   }
 
   clearEvent(): void {
+    this.onInspect(false)
     this.imageToken += 1
     this.closeZoom()
     this.cardEl.classList.remove('live', 'arrive')
@@ -343,6 +356,17 @@ export class Hud {
       figure.append(thumb)
       row.append(figure)
     }
+  }
+
+  private onImageInspect(event: Event, active: boolean): void {
+    if (event instanceof PointerEvent && event.pointerType === 'touch') return
+    const shot = event.target instanceof Element ? event.target.closest('.wiki-shot') : null
+    if (!(shot instanceof HTMLElement) || shot.hidden) return
+    if (!active) {
+      const next = event instanceof PointerEvent ? event.relatedTarget : null
+      if (next instanceof Node && (shot.contains(next) || (next instanceof Element && next.closest('.wiki-shot')))) return
+    }
+    this.onInspect(active)
   }
 
   private onThumbOver(event: PointerEvent): void {

@@ -1,0 +1,12 @@
+---
+description: Publish Greek Mythology changes to GitHub Pages after each requested change
+alwaysApply: true
+---
+
+# Publish
+
+After a requested change to this app is done and checked, commit it and push `main` so GitHub Pages deploys. Do this without waiting to be asked again.
+
+- Commit message says why the change was made.
+- Do not commit secrets, and do not force-push.
+- Push only this repo unless the portfolio listing changed too.

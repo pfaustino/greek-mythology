@@ -28,8 +28,8 @@ narrator.onHold = (state) => {
     playback.hold(90_000)
     return
   }
-  // After the line is spoken, move on. If speech never started, keep the card for five seconds.
-  playback.hold(state === 'spoken' ? 400 : dwellMs())
+  // After the line is spoken, leave the card up for five seconds. If speech never started, use that same pause.
+  playback.hold(dwellMs())
 }
 
 const hud = new Hud(cardRoot, railRoot, {
@@ -71,6 +71,9 @@ const hud = new Hud(cardRoot, railRoot, {
   onNarration: (enabled) => {
     narrator.setEnabled(enabled)
     if (enabled && playback.focused) narrator.speak(spokenScript(playback.focused.title, playback.focused.narration))
+  },
+  onInspect: (active) => {
+    playback.setInspecting(active)
   },
 })
 

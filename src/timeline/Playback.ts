@@ -100,8 +100,15 @@ export class Playback {
     return this.events[index]
   }
 
+  inspecting = false
+
+  setInspecting(active: boolean): void {
+    this.inspecting = active
+  }
+
   tick(dtMs: number, onFocus: (event: MythEvent, travel: number) => void): boolean {
     if (!this.playing || this.events.length === 0) return false
+    if (this.inspecting) return false
 
     if (this.focusing) {
       this.focusRemain -= dtMs
