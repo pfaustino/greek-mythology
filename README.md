@@ -1,4 +1,4 @@
-# Wine-Dark Chronicle
+# Greek Mythology
 
 **Live:** https://pfaustino.github.io/greek-mythology/
 

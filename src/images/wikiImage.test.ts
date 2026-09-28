@@ -23,6 +23,7 @@ describe('wiki images', () => {
       src: 'https://upload.wikimedia.org/chaos.jpg',
       full: 'https://upload.wikimedia.org/chaos.jpg',
       title: 'Chaos (cosmogony)',
+      caption: '',
     })
     expect(imageFromQuery({ query: { pages: { '2': { title: 'Empty' } } } }, 'Empty')).toBeNull()
     expect(imageFromQuery(null, 'Empty')).toBeNull()
@@ -44,8 +45,13 @@ describe('wiki images', () => {
         {
           title: 'File:Hollar.jpg',
           type: 'image',
-          caption: { text: 'Hollar' },
+          caption: { text: '  Hollar  ' },
           srcset: [{ src: '//thumb.wikimedia.org/wikipedia/commons/thumb/b/b/Hollar.jpg/500px-Hollar.jpg', scale: '1x' }],
+        },
+        {
+          title: 'File:Uncaptioned_statue.jpg',
+          type: 'image',
+          srcset: [{ src: '//upload.wikimedia.org/wikipedia/commons/statue.jpg', scale: '1x' }],
         },
         {
           title: 'File:Laurel_vector.svg',
@@ -65,12 +71,20 @@ describe('wiki images', () => {
       src: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a/Watts.jpg/960px-Watts.jpg',
       full: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a/Watts.jpg/960px-Watts.jpg',
       title: 'Watts – Chaos',
+      caption: 'Watts – Chaos',
     })
     expect(gallery.more).toEqual([
       {
         src: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b/Hollar.jpg/500px-Hollar.jpg',
         full: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b/Hollar.jpg/500px-Hollar.jpg',
         title: 'Hollar',
+        caption: 'Hollar',
+      },
+      {
+        src: 'https://upload.wikimedia.org/wikipedia/commons/statue.jpg',
+        full: 'https://upload.wikimedia.org/wikipedia/commons/statue.jpg',
+        title: 'Uncaptioned statue',
+        caption: '',
       },
     ])
     expect(imagesFromMediaList(null)).toEqual({ lead: null, more: [] })

@@ -29,9 +29,11 @@ export class Hud {
   private readonly filterSummary: HTMLElement
   private readonly zoomEl: HTMLElement
   private readonly zoomImg: HTMLImageElement
+  private readonly zoomCaption: HTMLElement
   private seeking = false
   private bodyHidden = false
   private imageToken = 0
+  private pinnedZoom = false
 
   constructor(cardRoot: HTMLElement, railRoot: HTMLElement, handlers: HudHandlers) {
     const eraButtons = ERAS.map((era) => `<button type="button" data-era="${era}">${eraLabel(era)}</button>`).join('')
@@ -106,12 +108,18 @@ export class Hud {
     zoom.setAttribute('aria-hidden', 'true')
     const zoomImg = document.createElement('img')
     zoomImg.alt = ''
-    zoom.append(zoomImg)
+    const zoomCaption = document.createElement('p')
+    zoomCaption.className = 'wiki-zoom-caption'
+    zoomCaption.hidden = true
+    zoom.append(zoomImg, zoomCaption)
     document.body.append(zoom)
     this.zoomEl = zoom
     this.zoomImg = zoomImg
+    this.zoomCaption = zoomCaption
     this.cardBody.addEventListener('pointerover', (event) => this.onThumbOver(event))
     this.cardBody.addEventListener('pointerout', (event) => this.onThumbOut(event))
+    this.cardBody.addEventListener('click', (event) => this.onMoreClick(event))
+    window.addEventListener('click', (event) => this.onOutsideZoomClick(event), true)
 
     const cardToggle = cardRoot.querySelector('#card-toggle') as HTMLButtonElement
     cardToggle.addEventListener('click', () => {
@@ -244,7 +252,7 @@ export class Hud {
     const tags = event.tags.map((tag) => tagLabel(tag)).join(' · ')
     const roman = event.roman ? `<p class="roman">Roman: ${escapeHtml(event.roman)}</p>` : ''
     const token = ++this.imageToken
-    this.zoomEl.classList.remove('open')
+    this.closeZoom()
     this.cardBody.innerHTML = `
       <figure class="wiki-shot" hidden>
         <img alt="" />
@@ -281,7 +289,7 @@ export class Hud {
 
   clearEvent(): void {
     this.imageToken += 1
-    this.zoomEl.classList.remove('open')
+    this.closeZoom()
     this.cardEl.classList.remove('live', 'arrive')
     this.cardTitle.textContent = 'The chronicle'
     this.cardBody.innerHTML = `<p class="muted">No episode in view.</p>`
@@ -304,6 +312,7 @@ export class Hud {
       if (gallery.lead) {
         img.alt = event.title
         img.dataset.full = gallery.lead.full
+        img.dataset.caption = gallery.lead.caption
         img.src = gallery.lead.src
       }
       this.mountMore(gallery.more, token)
@@ -319,8 +328,9 @@ export class Hud {
       figure.className = 'wiki-shot'
       figure.hidden = true
       const thumb = document.createElement('img')
-      thumb.alt = image.title
+      thumb.alt = image.caption || image.title
       thumb.dataset.full = image.full
+      thumb.dataset.caption = image.caption
       thumb.addEventListener('load', () => {
         if (token !== this.imageToken) return
         figure.hidden = false
@@ -336,22 +346,66 @@ export class Hud {
   }
 
   private onThumbOver(event: PointerEvent): void {
-    if (event.pointerType === 'touch') return
+    if (this.pinnedZoom || event.pointerType === 'touch') return
     const shot = event.target instanceof Element ? event.target.closest('.wiki-shot') : null
-    if (!(shot instanceof HTMLElement) || shot.hidden) return
-    const source = shot.querySelector('img')
-    const full = source?.dataset.full || source?.currentSrc
-    if (!full) return
-    this.zoomImg.src = full
-    this.zoomEl.classList.add('open')
+    if (!(shot instanceof HTMLElement) || shot.hidden || shot.closest('.wiki-more')) return
+    this.openZoom(shot, false)
   }
 
   private onThumbOut(event: PointerEvent): void {
+    if (this.pinnedZoom) return
     const shot = event.target instanceof Element ? event.target.closest('.wiki-shot') : null
-    if (!shot) return
+    if (!shot || shot.closest('.wiki-more')) return
     const next = event.relatedTarget
     if (next instanceof Node && shot.contains(next)) return
+    this.closeZoom()
+  }
+
+  private onMoreClick(event: MouseEvent): void {
+    const shot = event.target instanceof Element ? event.target.closest('.wiki-more .wiki-shot') : null
+    if (!(shot instanceof HTMLElement) || shot.hidden) return
+    event.stopPropagation()
+    const full = this.zoomSource(shot)
+    if (this.pinnedZoom && this.zoomEl.dataset.src === full) {
+      this.closeZoom()
+      return
+    }
+    this.openZoom(shot, true)
+  }
+
+  private onOutsideZoomClick(event: MouseEvent): void {
+    if (!this.pinnedZoom) return
+    const target = event.target
+    if (target instanceof Element && target.closest('.wiki-more .wiki-shot')) return
+    this.closeZoom()
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
+  private openZoom(shot: HTMLElement, pin: boolean): void {
+    const source = shot.querySelector('img')
+    const full = source?.dataset.full || source?.currentSrc
+    if (!full) return
+    const caption = source?.dataset.caption ?? ''
+    this.zoomImg.src = full
+    this.zoomEl.dataset.src = full
+    this.zoomCaption.textContent = caption
+    this.zoomCaption.hidden = caption.length === 0
+    this.zoomEl.classList.add('open')
+    this.pinnedZoom = pin
+  }
+
+  private closeZoom(): void {
+    this.pinnedZoom = false
     this.zoomEl.classList.remove('open')
+    delete this.zoomEl.dataset.src
+    this.zoomCaption.textContent = ''
+    this.zoomCaption.hidden = true
+  }
+
+  private zoomSource(shot: HTMLElement): string {
+    const source = shot.querySelector('img')
+    return source?.dataset.full || source?.currentSrc || ''
   }
 
   private onKeyDown(event: KeyboardEvent, handlers: HudHandlers): void {

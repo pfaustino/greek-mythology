@@ -2,6 +2,7 @@ export type WikiImage = {
   src: string
   full: string
   title: string
+  caption: string
 }
 
 export type WikiGallery = {
@@ -49,7 +50,7 @@ export function imageFromQuery(payload: unknown, page: string): WikiImage | null
   const hit = Object.values(pages).find((entry) => Boolean(entry.thumbnail?.source))
   const src = hit?.thumbnail?.source
   if (!src) return null
-  return { src, full: src, title: hit.title || page.replaceAll('_', ' ') }
+  return { src, full: src, title: hit.title || page.replaceAll('_', ' '), caption: '' }
 }
 
 export function imagesFromMediaList(payload: unknown): WikiGallery {
@@ -92,10 +93,12 @@ function imageFromMediaItem(item: MediaItem): WikiImage | null {
   if (!isContentImage(item)) return null
   const sources = rankedSrcs(item.srcset ?? [])
   if (sources.length === 0) return null
+  const caption = item.caption?.text?.trim() ?? ''
   return {
     src: sources[0],
     full: sources[sources.length - 1],
-    title: imageLabel(item),
+    title: caption || imageLabel(item),
+    caption,
   }
 }
 
@@ -112,8 +115,6 @@ function isContentImage(item: MediaItem): boolean {
 }
 
 function imageLabel(item: MediaItem): string {
-  const caption = item.caption?.text?.trim()
-  if (caption) return caption
   return (item.title ?? '')
     .replace(/^File:/, '')
     .replace(/\.[a-z0-9]+$/i, '')
